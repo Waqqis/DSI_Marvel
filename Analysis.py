@@ -48,6 +48,7 @@ class Analysis():
 
         # Convert the response to JSON
         data = response.json()
+        # Converted the response to DataFrame
         df = pd.DataFrame(data['data']['results'])
 
         print(df)
