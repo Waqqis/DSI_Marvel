@@ -47,8 +47,7 @@ class Analysis():
 
         # Convert the response to JSON
         data = response.json()
-
-        print(data)
+        return data
 
     def compute_analysis(self) -> Any:
         pass
