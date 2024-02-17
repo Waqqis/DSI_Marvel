@@ -1,5 +1,6 @@
 from typing import Any, Optional
 import matplotlib.pyplot as plt
+import pandas as pd
 import yaml
 import requests
 import hashlib
@@ -47,8 +48,9 @@ class Analysis():
 
         # Convert the response to JSON
         data = response.json()
+        df = pd.DataFrame(data['data']['results'])
 
-        print(data)
+        print(df)
 
     def compute_analysis(self) -> Any:
         pass
