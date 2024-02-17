@@ -2,6 +2,8 @@ from typing import Any, Optional
 import matplotlib.pyplot as plt
 import yaml
 import requests
+import hashlib
+import time
 
 
 class Analysis():
@@ -19,12 +21,34 @@ class Analysis():
         for path in paths:
             with open(path, 'r') as f:
                 this_config = yaml.safe_load(f)
-            config.update(this_config)
+            if this_config is not None:
+                config.update(this_config)
 
         self.config = config
 
     def load_data(self) -> None:
-        print(self.config['figure_title'])
+        ts = str(time.time())
+        
+        # Create a hash using md5
+        hash_value = hashlib.md5((ts + self.config['private_key'] + self.config['public_key']).encode('utf-8'))
+        md5digest = str(hash_value.hexdigest())
+
+        # Define the parameters
+        params = {
+            'ts': ts,
+            'apikey': self.config['public_key'],
+            'hash': md5digest
+        }
+        # Define the API endpoint
+        url = self.config['domain_url'] + '/v1/public/characters?limit=100&offset=0'
+
+        # Make the API request
+        response = requests.get(url, params=params)
+
+        # Convert the response to JSON
+        data = response.json()
+
+        print(data)
 
     def compute_analysis(self) -> Any:
         pass
@@ -34,4 +58,15 @@ class Analysis():
 
     def notify_done(self, message: str) -> None:
         pass
+
+
+# Define the path to the analysis configuration file
+analysis_config_path = 'configs/job_file.yml'
+
+# Create an Analysis object with the path to the analysis configuration file
+analysis = Analysis(analysis_config_path)
+
+# Call the load_data method on the instance
+analysis.load_data()
+        
     
