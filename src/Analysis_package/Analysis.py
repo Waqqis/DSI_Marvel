@@ -6,12 +6,13 @@ import requests
 import hashlib
 import time
 import os.path
+import logging
 
 
 class Analysis():
 
     def __init__(self, analysis_config: str) -> None:
-        
+
         dirname = os.path.dirname(__file__)
 
         CONFIG_PATHS = [os.path.join(dirname,'configs/system_config.yml'), 
@@ -20,6 +21,10 @@ class Analysis():
               
 
 
+        logging.basicConfig(filename='analysis.log', level=logging.INFO)
+        logging.info('Initializing Analysis')
+
+        CONFIG_PATHS = ['src/Analysis_package/configs/system_config.yml', 'src/Analysis_package/configs/user_config.yml', 'src/Analysis_package/configs/secrets.yml']
 
         # add the analysis config to the list of paths to load
         paths = CONFIG_PATHS + [analysis_config]
@@ -35,6 +40,7 @@ class Analysis():
                 config.update(this_config)
 
         self.config = config
+        logging.info('Analysis initialized')
 
     def load_data(self) -> None:
         ''' Retrieve data from the GitHub API
@@ -51,6 +57,7 @@ class Analysis():
         None
 
         '''
+        logging.info('Loading data')
 
         ts = str(time.time())
         
@@ -64,17 +71,26 @@ class Analysis():
             'apikey': self.config['public_key'],
             'hash': md5digest
         }
-        # Define the API endpoint
-        url = self.config['domain_url'] + '/v1/public/characters?limit=100&offset=0'
+        # Define the API endpoint 
+        #try/except block to handle the case where the domain_url is not defined in the config file
+        try:
+            url = self.config['domain_url'] + '/v1/public/characters?limit=100&offset=0'
+        except:
+            url = 'http://gateway.marvel.com' + '/v1/public/characters?limit=100&offset=0'
+
 
         # Make the API request
-        response = requests.get(url, params=params)
-
-        # Convert the response to JSON
-        data = response.json()
+        # try/except block to handle response errors
+        try:
+            response = requests.get(url, params=params)
+            dat = response.json()
+            logging.info('Data loaded')
+            return data
+        except requests.exceptions.RequestException as e:
+            logging.error(f'Error loading data: {e}')
+            raise SystemExit(e)
         
-        return data                     
-
+        
     def compute_analysis(self) -> Any:
         '''Analyze previously-loaded data.
 
@@ -93,7 +109,7 @@ class Analysis():
 
         results = self.load_data()['data']['results']
         df = pd.DataFrame(results)
-        
+        logging.info('computing analysis')
         # compute mean, median, leniar regression for comics, series, stories, events
         df['comics'] = df['comics'].apply(lambda x: x['available'])
         df['series'] = df['series'].apply(lambda x: x['available'])
@@ -129,7 +145,7 @@ class Analysis():
         fig : matplotlib.Figure
 
         '''
-
+        logging.info('plotting data')
         df = self.compute_analysis()               
         df.set_index('name', inplace=True)
 
@@ -146,9 +162,18 @@ class Analysis():
         plt.tight_layout()  # Add padding
         #plt.show()
 
-        # Save the figure
-        plt.savefig('topComics.png', bbox_inches='tight')  # Add bbox_inches='tight' to save the full figure
+        # Save the figure to the path in the parameter `save_path` with fig name 'topComics.png'
+        save_path = self.config['save_path']
+        if save_path is None:
+            save_path = 'plots/'
+            
+        plot_format = self.config['plot_format']    
+        if plot_format is None:
+            plot_format = 'png'
 
+        logging.info(f'Saving plot to {save_path}topComics.{plot_format}')
+        plt.savefig(save_path + 'topComics.' + plot_format, bbox_inches='tight')
+        
         #top 10 series
         top_ten_series = df.sort_values('series', ascending=False).head(10)
 
@@ -162,8 +187,9 @@ class Analysis():
         plt.tight_layout()  # Add padding
         #plt.show()
 
+        logging.info(f'Saving plot to {save_path}topSeries.{plot_format}')
         # Save the figure
-        plt.savefig('topSeries.png', bbox_inches='tight')  # Add bbox_inches='tight' to save the full figure
+        plt.savefig(save_path +'topSeries.' + plot_format, bbox_inches='tight')  # Add bbox_inches='tight' to save the full figure
 
         #top 10 stories
         top_ten_stories = df.sort_values('stories', ascending=False).head(10)
@@ -178,8 +204,9 @@ class Analysis():
         plt.tight_layout()  # Add padding
         #plt.show()
 
+        logging.info(f'Saving plot to {save_path}topStories.{plot_format}')
         # Save the figure
-        plt.savefig('topStories.png', bbox_inches='tight')  # Add bbox_inches='tight' to save the full figure
+        plt.savefig(save_path +'topStories.' + plot_format, bbox_inches='tight')  # Add bbox_inches='tight' to save the full figure
 
         #top 10 events
         top_ten_events = df.sort_values('events', ascending=False).head(10)
@@ -194,8 +221,9 @@ class Analysis():
         plt.tight_layout()  # Add padding
         #plt.show()
 
+        logging.info(f'Saving plot to {save_path}topEvents.{plot_format}')
         # Save the figure
-        plt.savefig('topEvents.png', bbox_inches='tight')  # Add bbox_inches='tight' to save the full figure
+        plt.savefig(save_path +'topEvents.' + plot_format, bbox_inches='tight')  # Add bbox_inches='tight' to save the full figure
 
         pass
 
@@ -214,7 +242,7 @@ class Analysis():
         None
 
         '''
-
+        logging.info('Notifying user')
         topicname = 'Marvel_Result_notification'
         requests.post(f"https://ntfy.sh/{topicname}", 
         data=message.encode(encoding='utf-8'))
