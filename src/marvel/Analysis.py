@@ -260,3 +260,4 @@ if __name__ == '__main__':
     analysis.plot_data()
     analysis.notify_done('Marvel analysis is complete')
     
+
