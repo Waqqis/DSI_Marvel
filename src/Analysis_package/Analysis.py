@@ -6,7 +6,6 @@ import requests
 import hashlib
 import time
 import os.path
-
 import logging
 
 
@@ -29,7 +28,7 @@ class Analysis():
 
         # add the analysis config to the list of paths to load
         paths = CONFIG_PATHS + [analysis_config]
-
+        
         # initialize empty dictionary to hold the configuration
         config = {}
 
