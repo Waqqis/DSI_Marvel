@@ -145,7 +145,11 @@ class Analysis():
 
 
     def notify_done(self, message: str) -> None:
-        pass
+        topicname = 'Marvel_Result_notification'
+        message = 'You request for Marvel Analysis has been compelted'
+
+        requests.post(f"https://ntfy.sh/{topicname}", 
+        data=message.encode(encoding='utf-8'))
 
 
 # Define the path to the analysis configuration file
