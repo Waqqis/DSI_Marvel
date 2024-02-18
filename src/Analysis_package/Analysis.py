@@ -10,7 +10,7 @@ import time
 class Analysis():
 
     def __init__(self, analysis_config: str) -> None:
-        CONFIG_PATHS = ['configs/system_config.yml', 'configs/user_config.yml', 'configs/secrets.yml']
+        CONFIG_PATHS = ['Analysis_package/configs/system_config.yml', 'Analysis_package/configs/user_config.yml', 'Analysis_package/configs/secrets.yml']
 
         # add the analysis config to the list of paths to load
         paths = CONFIG_PATHS + [analysis_config]
