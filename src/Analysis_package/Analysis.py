@@ -248,5 +248,13 @@ class Analysis():
         data=message.encode(encoding='utf-8'))
 
         pass
+
+
+analysis.load_data()
+
+# Call the plot_data method on the instance
+analysis.plot_data()
+
+analysis.notify_done("You request for Marvel Analysis has been compelted")
         
     
