@@ -10,7 +10,7 @@ import time
 class Analysis():
 
     def __init__(self, analysis_config: str) -> None:
-        CONFIG_PATHS = ['configs/system_config.yml', 'configs/user_config.yml']
+        CONFIG_PATHS = ['configs/system_config.yml', 'configs/user_config.yml', 'configs/secrets.yml']
 
         # add the analysis config to the list of paths to load
         paths = CONFIG_PATHS + [analysis_config]
@@ -28,6 +28,21 @@ class Analysis():
         self.config = config
 
     def load_data(self) -> None:
+        ''' Retrieve data from the GitHub API
+
+        This function makes an HTTPS request to the GitHub API and retrieves your selected data. The data is
+        stored in the Analysis object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        '''
+
         ts = str(time.time())
         
         # Create a hash using md5
@@ -48,12 +63,28 @@ class Analysis():
 
         # Convert the response to JSON
         data = response.json()
-        return data
-       
+        
+        return data                     
 
     def compute_analysis(self) -> Any:
+        '''Analyze previously-loaded data.
+
+        This function runs an analytical measure of your choice (mean, median, linear regression, etc...)
+        and returns the data in a format of your choice.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        analysis_output : Any
+
+        '''
+
         results = self.load_data()['data']['results']
         df = pd.DataFrame(results)
+        
         # compute mean, median, leniar regression for comics, series, stories, events
         df['comics'] = df['comics'].apply(lambda x: x['available'])
         df['series'] = df['series'].apply(lambda x: x['available'])
@@ -71,10 +102,26 @@ class Analysis():
         print(f"Median events: {df['events'].median()}")
 
         return df
-        
+                
 
     def plot_data(self, save_path: Optional[str] = None) -> plt.Figure:
-        df = self.compute_analysis()
+        ''' Analyze and plot data
+
+        Generates a plot, display it to screen, and save it to the path in the parameter `save_path`, or 
+        the path from the configuration file if not specified.
+
+        Parameters
+        ----------
+        save_path : str, optional
+            Save path for the generated figure
+
+        Returns
+        -------
+        fig : matplotlib.Figure
+
+        '''
+
+        df = self.compute_analysis()               
         df.set_index('name', inplace=True)
 
         # Sort the DataFrame by the 'comics' column in descending order and select the top 10
@@ -141,24 +188,28 @@ class Analysis():
         # Save the figure
         plt.savefig('topEvents.png', bbox_inches='tight')  # Add bbox_inches='tight' to save the full figure
 
-
-
+        pass
 
     def notify_done(self, message: str) -> None:
-        topicname = 'Marvel_Result_notification'
-        message = 'You request for Marvel Analysis has been compelted'
+        ''' Notify the user that analysis is complete.
 
+        Send a notification to the user through the ntfy.sh webpush service.
+
+        Parameters
+        ----------
+        message : str
+        Text of the notification to send
+
+        Returns
+        -------
+        None
+
+        '''
+
+        topicname = 'Marvel_Result_notification'
         requests.post(f"https://ntfy.sh/{topicname}", 
         data=message.encode(encoding='utf-8'))
 
-
-# Define the path to the analysis configuration file
-analysis_config_path = 'configs/job_file.yml'
-
-# Create an Analysis object with the path to the analysis configuration file
-analysis = Analysis(analysis_config_path)
-
-# Call the load_data method on the instance
-analysis.load_data()
+        pass
         
     
