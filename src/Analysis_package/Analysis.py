@@ -5,12 +5,22 @@ import yaml
 import requests
 import hashlib
 import time
+import os.path
 import logging
 
 
 class Analysis():
 
     def __init__(self, analysis_config: str) -> None:
+
+        dirname = os.path.dirname(__file__)
+
+        CONFIG_PATHS = [os.path.join(dirname,'configs/system_config.yml'), 
+                        os.path.join(dirname,'configs/user_config.yml'), 
+                        os.path.join(dirname,'configs/secrets.yml')]
+              
+
+
         logging.basicConfig(filename='analysis.log', level=logging.INFO)
         logging.info('Initializing Analysis')
 
