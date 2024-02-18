@@ -1,0 +1,5 @@
+save_path : plots/
+plot_format : png
+plot_dpi : 300
+plot_size : 10, 6
+plot_style : seaborn-whitegrid
