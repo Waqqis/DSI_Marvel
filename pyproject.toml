@@ -8,20 +8,18 @@ packages = ["src/marvel"]
 [project]
 name = "DSI_Marvel"
 authors = [
+
     {name = "Ruchi", email = "ruchi7658@gmail.com"}, 
     {name = "Waqas", email = "waqqis@yahoo.com"},
     {name = "Bashier", email = "bashierk@gmail.com"},
+
 ]
 description = "Building Robust Software Summative Assignment"
 version = "0.1.0"
-dependencies = ["matplotlib", "pandas", "requests",
-]
+dependencies = ["matplotlib", "pandas", "requests"]
 requires-python = ">=3.11.0"
 readme = "README.md"
 classifiers = [
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: MIT License"
 ]
-
-[project.scripts]
-marvalanalysis = "Analysis:Analysis"
 
