@@ -15,16 +15,16 @@ class Analysis():
 
         dirname = os.path.dirname(__file__)
 
-        CONFIG_PATHS = [os.path.join(dirname,'configs/system_config.yml'), 
-                        os.path.join(dirname,'configs/user_config.yml'), 
-                        os.path.join(dirname,'configs/secrets.yml')]
+        CONFIG_PATHS = [os.path.join(dirname,'src/marvel/configs/system_config.yml'), 
+                        os.path.join(dirname,'src/marvel/configs/user_config.yml'), 
+                        os.path.join(dirname,'src/marvel/configs/secrets.yml')]
               
 
 
         logging.basicConfig(filename='analysis.log', level=logging.INFO)
         logging.info('Initializing Analysis')
 
-        CONFIG_PATHS = ['configs/system_config.yml', 'configs/user_config.yml', 'configs/secrets.yml']
+        CONFIG_PATHS = ['src/marvel/configs/system_config.yml', 'src/marvel/configs/user_config.yml', 'src/marvel/configs/secrets.yml']
 
         # add the analysis config to the list of paths to load
         paths = CONFIG_PATHS + [analysis_config]
@@ -33,6 +33,7 @@ class Analysis():
         config = {}
 
         # load each config file and update the config dictionary
+        print(os.getcwd())
         for path in paths:
             with open(path, 'r') as f:
                 this_config = yaml.safe_load(f)
@@ -256,8 +257,9 @@ class Analysis():
     
 #main block
 if __name__ == '__main__':
-    analysis = Analysis('configs/secrets.yml')
-    analysis.plot_data()
-    analysis.notify_done('Marvel analysis is complete')
+    analysis_obj = Analysis('src/marvel/configs/secrets.yml')
+    analysis_obj.load_data()
+    analysis_obj.plot_data()
+    analysis_obj.notify_done('Marvel analysis is complete')
     
 
