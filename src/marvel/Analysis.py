@@ -33,7 +33,6 @@ class Analysis():
         config = {}
 
         # load each config file and update the config dictionary
-        print(os.getcwd())
         for path in paths:
             with open(path, 'r') as f:
                 this_config = yaml.safe_load(f)
@@ -254,12 +253,5 @@ class Analysis():
         
         pass
         
-    
-#main block
-if __name__ == '__main__':
-    analysis_obj = Analysis('src/marvel/configs/secrets.yml')
-    analysis_obj.load_data()
-    analysis_obj.plot_data()
-    analysis_obj.notify_done('Marvel analysis is complete')
     
 
