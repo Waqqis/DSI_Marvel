@@ -15,17 +15,13 @@ class Analysis():
 
         dirname = os.path.dirname(__file__)
 
-        CONFIG_PATHS = [os.path.join(dirname,'src/marvel/configs/system_config.yml'), 
-                        os.path.join(dirname,'src/marvel/configs/user_config.yml'), 
-                        os.path.join(dirname,'src/marvel/configs/secrets.yml')]
-              
-
-
+        CONFIG_PATHS = [os.path.join(dirname,'configs/system_config.yml'), 
+                        os.path.join(dirname,'configs/user_config.yml'), 
+                        os.path.join(dirname,'configs/secrets.yml')]
+        
         logging.basicConfig(filename='analysis.log', level=logging.INFO)
         logging.info('Initializing Analysis')
-
-        CONFIG_PATHS = ['src/marvel/configs/system_config.yml', 'src/marvel/configs/user_config.yml', 'src/marvel/configs/secrets.yml']
-
+        
         # add the analysis config to the list of paths to load
         paths = CONFIG_PATHS + [analysis_config]
         
@@ -84,6 +80,7 @@ class Analysis():
         try:
             response = requests.get(url, params=params)
             data = response.json()
+           
             logging.info('Data loaded')
             return data
         except requests.exceptions.RequestException as e:
@@ -146,6 +143,7 @@ class Analysis():
 
         '''
         logging.info('plotting data')
+        
         df = self.compute_analysis()               
         df.set_index('name', inplace=True)
 
