@@ -8,7 +8,7 @@ packages = ["src/Analysis_package"]
 [project]
 name = "DSI_Marvel"
 authors = [
-    {name="Ruchi", email="ruchi7658@gmail.com"}{name = "Waqas", email = "waqqis@yahoo.com"},
+    {name="Ruchi", email="ruchi7658@gmail.com"},{name = "Waqas", email = "waqqis@yahoo.com"},
 ]
 description = "Building Robust Software Summative Assignment"
 version = "0.1.0"
